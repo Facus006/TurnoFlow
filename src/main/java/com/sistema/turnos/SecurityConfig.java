@@ -32,11 +32,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/imagenes", "/imagenes/**", "/error")
-                .permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/publicaciones/**").authenticated()
-                .requestMatchers("/usuarios/**").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 )

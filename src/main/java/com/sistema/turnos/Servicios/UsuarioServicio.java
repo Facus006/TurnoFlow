@@ -1,5 +1,8 @@
 package com.sistema.turnos.Servicios;
 
+import com.sistema.turnos.DTO.Usuario.ActualizarEmailDTO;
+import com.sistema.turnos.DTO.Usuario.EditarPasswordDTO;
+import com.sistema.turnos.DTO.Usuario.EditarUsuarioDTO;
 import com.sistema.turnos.DTO.Usuario.UsuarioRequestDTO;
 import com.sistema.turnos.DTO.Usuario.UsuarioResponseDTO;
 import com.sistema.turnos.Entidades.Usuario;
@@ -46,7 +49,179 @@ public class UsuarioServicio {
 
     @Transactional(readOnly = true)
     public Page<UsuarioResponseDTO> listarUsuarios(Pageable pageable) {
+        validarAdmin(obtenerUsuarioLogueado());
         return usuarioRepositorio.findAll(pageable).map(this::toDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UsuarioResponseDTO> listarUsuariosActivos(Pageable pageable) {
+        return usuarioRepositorio.findByEnabledTrue(pageable).map(this::toDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario buscarUsuarioPorEmail(String email) {
+        validarEmailFormato(email);
+        Usuario usuario = usuarioRepositorio.findByEmail(email);
+
+        if (usuario == null) {
+            throw new MyException("Usuario no encontrado.", HttpStatus.NOT_FOUND);
+        }
+        return usuario;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UsuarioResponseDTO> buscarUsuarioPorNombre(String nombre,
+            Pageable pageable) {
+        validarStringFormato(nombre);
+        return usuarioRepositorio
+                .findByNombreContainingIgnoreCase(nombre, pageable)
+                .map(this::toDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO obtenerPorId(UUID id) {
+        return toDTO(buscarUsuarioPorId(id));
+    }
+
+    @Transactional
+    public void eliminarUsuarioPorId(UUID id) {
+        validarId(id);
+
+        Usuario logeado = obtenerUsuarioLogueado();
+        Usuario usuario = buscarUsuarioPorId(id);
+
+        validarPropietarioOAdmin(logeado, usuario);
+
+        usuarioRepositorio.delete(usuario);
+
+    }
+
+    @Transactional
+    public UsuarioResponseDTO editarUsuario(EditarUsuarioDTO dto) {
+        Usuario logeado = obtenerUsuarioLogueado();
+        validarPassword(dto.getPassword(), dto.getPassword2());
+        logeado.setNombre(dto.getNombre());
+        logeado.setApellido(dto.getApellido());
+        usuarioRepositorio.save(logeado);
+        return toDTO(logeado);
+    }
+
+    @Transactional
+    public Usuario editarPassword(EditarPasswordDTO dto) {
+
+        validarStringFormato(dto.getPassword());
+        validarPassword(dto.getNuevoPassword(), dto.getNuevoPassword2());
+
+        Usuario u = obtenerUsuarioLogueado();
+
+        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
+            throw new MyException("Contraseña incorrecta.",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        u.setPassword(passwordEncoder.encode(dto.getNuevoPassword()));
+
+        return usuarioRepositorio.save(u);
+    }
+
+    @Transactional
+    public void alternarRolAdmin(UUID id) {
+        validarId(id);
+
+        Usuario logeado = obtenerUsuarioLogueado();
+
+        validarAdmin(logeado);
+
+        Usuario u = buscarUsuarioPorId(id);
+
+        if (logeado.getId().equals(u.getId())) {
+            throw new MyException("No puedes cambiar tu propio rol",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        if (u.getRole() == Role.NEGOCIO) {
+            throw new MyException("No puedes cambiar el rol de un negocio desde aquí",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        if (u.getRole() == Role.ADMIN) {
+            u.setRole(Role.USER);
+        } else {
+            u.setRole(Role.ADMIN);
+        }
+
+        usuarioRepositorio.save(u);
+    }
+
+    @Transactional
+    public void setNegocio(UUID id) {
+        validarId(id);
+        Usuario logeado = obtenerUsuarioLogueado();
+        validarAdmin(logeado);
+        Usuario u = buscarUsuarioPorId(id);
+        if (logeado.getId().equals(u.getId())) {
+            throw new MyException("No puedes cambiar tu propio rol",
+                    HttpStatus.BAD_REQUEST);
+        }
+        u.setRole(Role.NEGOCIO);
+        usuarioRepositorio.save(u);
+    }
+
+    @Transactional
+    public void quitarRolNegocio(UUID id) {
+        validarId(id);
+        Usuario logeado = obtenerUsuarioLogueado();
+        validarAdmin(logeado);
+        Usuario u = buscarUsuarioPorId(id);
+        if (logeado.getId().equals(u.getId())) {
+            throw new MyException("No puedes cambiar tu propio rol",
+                    HttpStatus.BAD_REQUEST);
+        }
+        u.setRole(Role.USER);
+        usuarioRepositorio.save(u);
+    }
+
+    @Transactional
+    public void cambiarEstadoUsuario(UUID id) {
+        validarId(id);
+        Usuario u = buscarUsuarioPorId(id);
+        Usuario logeado = obtenerUsuarioLogueado();
+        validarAdmin(logeado);
+        u.setEnabled(!u.isEnabled());
+        usuarioRepositorio.save(u);
+    }
+
+    @Transactional
+    public Usuario actualizarEmail(ActualizarEmailDTO dto) {
+        validarEmailFormato(dto.getEmail());
+        validarStringFormato(dto.getPassword());
+
+        Usuario u = obtenerUsuarioLogueado();
+        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
+            throw new MyException("Contraseña incorrecta.",
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (u.getEmail().equalsIgnoreCase(dto.getEmail())) {
+            throw new MyException("El nuevo email no puede ser igual al actual.",
+                    HttpStatus.CONFLICT);
+        }
+
+        validarEmailDisponible(dto.getEmail());
+        u.setEmail(dto.getEmail());
+
+        return usuarioRepositorio.save(u);
+    }
+
+    private UsuarioResponseDTO toDTO(Usuario u) {
+        UsuarioResponseDTO dto = new UsuarioResponseDTO();
+        dto.setNombre(u.getNombre());
+        dto.setApellido(u.getApellido());
+        dto.setEmail(u.getEmail());
+        dto.setRol(u.getRole());
+        dto.setEnabled(u.isEnabled());
+        dto.setId(u.getId());
+
+        return dto;
     }
 
     public Usuario obtenerUsuarioLogueado() {
@@ -73,33 +248,6 @@ public class UsuarioServicio {
         }
 
         return usuario;
-    }
-
-    @Transactional(readOnly = true)
-    public Usuario buscarUsuarioPorEmail(String email) {
-        validarEmailFormato(email);
-        Usuario usuario = usuarioRepositorio.findByEmail(email);
-        if (usuario == null) {
-            throw new MyException("Usuario no encontrado.", HttpStatus.NOT_FOUND);
-        }
-        return usuario;
-    }
-
-    private UsuarioResponseDTO toDTO(Usuario u) {
-        UsuarioResponseDTO dto = new UsuarioResponseDTO();
-        dto.setNombre(u.getNombre());
-        dto.setApellido(u.getApellido());
-        dto.setEmail(u.getEmail());
-        dto.setRol(u.getRole());
-        dto.setEnabled(u.isEnabled());
-        dto.setId(u.getId());
-
-        return dto;
-    }
-
-    @Transactional(readOnly = true)
-    public UsuarioResponseDTO obtenerPorId(UUID id) {
-        return toDTO(buscarUsuarioPorId(id));
     }
 
     private Usuario buscarUsuarioPorId(UUID id) {
@@ -142,4 +290,32 @@ public class UsuarioServicio {
         }
     }
 
+    private void validarId(UUID id) {
+        if (id == null) {
+            throw new MyException("ID inválido",
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validarPropietarioOAdmin(Usuario logeado, Usuario objetivo) {
+        if (!logeado.getId().equals(objetivo.getId())
+                && logeado.getRole() != Role.ADMIN) {
+            throw new MyException("No tienes permisos para esta acción.",
+                    HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validarAdmin(Usuario usuario) {
+        if (usuario.getRole() != Role.ADMIN) {
+            throw new MyException("No tienes permiso para esta acción",
+                    HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validarStringFormato(String string) {
+        if (string == null || string.isBlank()) {
+            throw new MyException("Error texto no valido.",
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
 }
