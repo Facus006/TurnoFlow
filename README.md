@@ -1,6 +1,6 @@
 # TurnoFlow
 
-Sistema de gestión de turnos desarrollado con Java y Spring Boot.
+API REST que permite a negocios gestionar sus turnos y a clientes reservarlos, con autenticación JWT y control de acceso por roles.
 
 ## Tecnologías
 - Java
@@ -11,7 +11,8 @@ Sistema de gestión de turnos desarrollado con Java y Spring Boot.
 - Hibernate/JPA
 - Docker
 - Maven
-
+- Swagger
+- 
 ## Funcionalidades
 - Registro/Login
 - Roles (ADMIN / CLIENTE / NEGOCIO)
@@ -24,4 +25,4 @@ Sistema de gestión de turnos desarrollado con Java y Spring Boot.
 - Frontend React
 - Emails automáticos
 - Deploy
-- Swagger
+
