@@ -67,12 +67,6 @@ public class TurnoControlador {
         return ResponseEntity.ok(turnoServicio.misTurnos(pageable));
     }
 
-    @GetMapping("/negocio/{id}")
-    public ResponseEntity<Page<TurnoResponseDTO>> negocio(
-            @PathVariable("id") UUID id, Pageable pageable) {
-        return ResponseEntity.ok(turnoServicio.turnosNegocio(id, pageable));
-    }
-
     @GetMapping("/negocio")
     public ResponseEntity<Page<TurnoResponseDTO>> misTurnosNegocio(Pageable pageable) {
         return ResponseEntity.ok(turnoServicio.turnosMiNegocio(pageable));

@@ -1,6 +1,5 @@
 package com.sistema.turnos.DTO.Servicio;
 
-import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.Data;

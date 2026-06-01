@@ -8,7 +8,6 @@ import com.sistema.turnos.Entidades.Turno;
 import com.sistema.turnos.Entidades.Usuario;
 import com.sistema.turnos.Enum.EstadoTurno;
 import com.sistema.turnos.Enum.Role;
-import com.sistema.turnos.Repositorios.NegocioRepositorio;
 import com.sistema.turnos.Repositorios.ServicioRepositorio;
 import com.sistema.turnos.Repositorios.TurnoRepositorio;
 import com.sistema.turnos.errores.MyException;
@@ -29,7 +28,7 @@ public class TurnoServicio {
     private final UsuarioServicio usuarioServicio;
     private final ServicioRepositorio servicioRepositorio;
     private final TurnoRepositorio turnoRepositorio;
-    private final NegocioRepositorio negocioRepositorio;
+    private final NegocioServicio negocioServicio;
 
     @Transactional
     public TurnoResponseDTO reservarTurno(TurnoRequestDTO dto) {
@@ -238,14 +237,7 @@ public class TurnoServicio {
 
     @Transactional(readOnly = true)
     public Page<TurnoResponseDTO> turnosMiNegocio(Pageable pageable) {
-        Negocio negocio = negocioRepositorio.
-                findByPropietarioId(
-                        usuarioServicio.obtenerUsuarioLogueado().getId()).
-                orElseThrow(()
-                        -> new MyException(
-                        "Negocio no encontrado",
-                        HttpStatus.NOT_FOUND
-                ));
+        Negocio negocio = negocioServicio.obtenerMiNegocio();
         return turnoRepositorio.findByNegocioId(
                 negocio.getId(), pageable).map(this::toDto);
     }

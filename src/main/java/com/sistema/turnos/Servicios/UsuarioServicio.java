@@ -99,7 +99,6 @@ public class UsuarioServicio {
     @Transactional
     public UsuarioResponseDTO editarUsuario(EditarUsuarioDTO dto) {
         Usuario logeado = obtenerUsuarioLogueado();
-        validarPassword(dto.getPassword(), dto.getPassword2());
         logeado.setNombre(dto.getNombre());
         logeado.setApellido(dto.getApellido());
         usuarioRepositorio.save(logeado);
