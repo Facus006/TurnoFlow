@@ -21,7 +21,7 @@ API REST que permite a negocios gestionar sus turnos y a clientes reservarlos, c
 - Paginación
 - Seguridad con JWT
 
-  ## 🔗 Repositorio frontend
+## 🔗 Repositorio frontend
 
 [TurnoFlow — Frontend](https://github.com/Facus006/TurnoFlow-Front)
 
