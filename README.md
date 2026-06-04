@@ -32,8 +32,8 @@ API REST que permite a negocios gestionar sus turnos y a clientes reservarlos, c
 ## 📸 API Documentation
 
 ### Endpoints
-![Swagger 1](https://github.com/user-attachments/assets/634a57b6-39b5-438c-abf7-9561c44396a9)
-![Swagger 2](https://github.com/user-attachments/assets/6abe7ee0-f022-413e-9015-8e4fae1c8f93)
+![Swagger 1](https://github.com/user-attachments/assets/6abe7ee0-f022-413e-9015-8e4fae1c8f93)
+![Swagger 2](https://github.com/user-attachments/assets/634a57b6-39b5-438c-abf7-9561c44396a9)
 
 ### Endpoint expandido
 ![Swagger detalle](https://github.com/user-attachments/assets/7ec004d5-3aab-4f8c-9a27-968ad81f51fc)
