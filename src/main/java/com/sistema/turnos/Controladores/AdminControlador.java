@@ -1,7 +1,9 @@
 package com.sistema.turnos.Controladores;
 
+import com.sistema.turnos.DTO.Negocio.NegocioResponse;
 import com.sistema.turnos.DTO.Turno.TurnoResponseDTO;
 import com.sistema.turnos.DTO.Usuario.UsuarioResponseDTO;
+import com.sistema.turnos.Servicios.NegocioServicio;
 import com.sistema.turnos.Servicios.TurnoServicio;
 import com.sistema.turnos.Servicios.UsuarioServicio;
 import java.util.UUID;
@@ -23,9 +25,10 @@ public class AdminControlador {
 
     private final UsuarioServicio usuarioServicio;
     private final TurnoServicio turnoServicio;
+    private final NegocioServicio negocioServicio;
 
     @GetMapping("/usuario/all")
-    public ResponseEntity<Page<UsuarioResponseDTO>> all(Pageable pageable) {
+    public ResponseEntity<Page<UsuarioResponseDTO>> allUsers(Pageable pageable) {
         return ResponseEntity.ok(usuarioServicio.listarUsuarios(pageable));
     }
 
@@ -73,6 +76,11 @@ public class AdminControlador {
     public ResponseEntity<Page<TurnoResponseDTO>> negocio(
             @PathVariable("id") UUID id, Pageable pageable) {
         return ResponseEntity.ok(turnoServicio.turnosNegocio(id, pageable));
+    }
+
+    @GetMapping("/negocios")
+    public ResponseEntity<Page<NegocioResponse>> allNegocios(Pageable pageable) {
+        return ResponseEntity.ok(negocioServicio.findAll(pageable));
     }
 
 }

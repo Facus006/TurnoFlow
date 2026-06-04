@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class NegocioResponse {
 
+    private UUID id;
     private String nombre;
     private String descripcion;
     private String categoria;
@@ -13,5 +14,6 @@ public class NegocioResponse {
     private String telefono;
     private UUID propietarioId;
     private String propietarioNombre;
-    
+    private boolean activo;
+
 }

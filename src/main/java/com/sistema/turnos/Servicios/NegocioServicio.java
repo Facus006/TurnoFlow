@@ -87,8 +87,13 @@ public class NegocioServicio {
     }
 
     @Transactional(readOnly = true)
-    public Page<NegocioResponse> findAll(Pageable pageable) {
+    public Page<NegocioResponse> findAlldto(Pageable pageable) {
         return negocioRepositorio.findByActivoTrue(pageable).map(this::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NegocioResponse> findAll(Pageable pageable) {
+        return negocioRepositorio.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
@@ -107,6 +112,8 @@ public class NegocioServicio {
     public NegocioResponse toDto(Negocio negocio) {
         NegocioResponse dto = new NegocioResponse();
 
+        dto.setId(negocio.getId());
+        dto.setActivo(negocio.isActivo());
         dto.setNombre(negocio.getNombre());
         dto.setDescripcion(negocio.getDescripcion());
         dto.setCategoria(negocio.getCategoria());

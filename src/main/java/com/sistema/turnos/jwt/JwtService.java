@@ -22,8 +22,7 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String SECRET_KEY;
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
-    // private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hora
 
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -35,6 +34,8 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", usuario.getRole().name());
         claims.put("userId", usuario.getId());
+        claims.put("nombre", usuario.getNombre());
+        claims.put("apellido", usuario.getApellido());
 
         return Jwts.builder()
                 .setClaims(claims)
