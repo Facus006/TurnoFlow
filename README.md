@@ -23,23 +23,22 @@ API REST que permite a negocios gestionar sus turnos y a clientes reservarlos, c
 - Paginación
 - Seguridad con JWT
 
-  Ejecución con Docker
-docker compose up --build
-
-La API quedará disponible en:
-
+ ## Ejecución con Docker
+- docker compose up --build
+- 
+-La API quedará disponible en:
 http://localhost:8080
 
-Documentación Swagger:
-
+-Documentación Swagger:
 http://localhost:8080/swagger-ui/index.html
-Configuración
 
-Crear un archivo:
+ #Configuración
+
+-Crear un archivo:
 
 src/main/resources/application.properties
 
-tomando como referencia:
+-tomando como referencia:
 
 src/main/resources/application-example.properties
 
