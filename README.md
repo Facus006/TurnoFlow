@@ -52,7 +52,8 @@ src/main/resources/application-example.properties
 
 ## 🌐 Deploy
 API desplegada en Railway: [https://turnoflow-production.up.railway.app/swagger-ui/index.html#/]
-Frontend desplegado en Vercel: [(https://turno-flow-front.vercel.app/)]
+
+Frontend desplegado en Vercel: [https://turno-flow-front.vercel.app/]
 
 ## 📸 API Documentation
 
