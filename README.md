@@ -10,9 +10,11 @@ API REST que permite a negocios gestionar sus turnos y a clientes reservarlos, c
 - MySQL
 - Hibernate/JPA
 - Docker
+- Docker Compose
 - Maven
-- Swagger
-- 
+- Swagger / OpenAPI
+- JUnit & Mockito
+
 ## Funcionalidades
 - Registro/Login
 - Roles (ADMIN / CLIENTE / NEGOCIO)
@@ -20,6 +22,26 @@ API REST que permite a negocios gestionar sus turnos y a clientes reservarlos, c
 - Confirmación/Rechazo/Cancelación
 - Paginación
 - Seguridad con JWT
+
+ ## Ejecución con Docker
+- docker compose up --build
+ 
+- La API quedará disponible en:
+http://localhost:8080
+
+- Documentación Swagger:
+http://localhost:8080/swagger-ui/index.html
+
+ # Configuración
+
+- Crear un archivo:
+
+src/main/resources/application.properties
+
+- tomando como referencia:
+
+src/main/resources/application-example.properties
+
 
 ## 🔗 Repositorio frontend
 
